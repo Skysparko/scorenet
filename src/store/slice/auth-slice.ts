@@ -5,7 +5,12 @@ import { persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import AuthApi from "../../api/auth-api";
 import { RootState } from "..";
-import { IAuth } from "@/types/auth.type";
+import {
+  IAuth,
+  ILoginUserPayload,
+  IOtpVerifyPayload,
+  IRegisterUserPayload,
+} from "@/types/auth.type";
 
 const persistConfig = {
   key: "auth",
@@ -20,18 +25,42 @@ type TState = {
 
 const initialState: TState = {
   user: {
-    tokens: null,
+    token: null,
+    detail: null,
   },
   loading: false,
 };
 
-//create async thunk for login
 const login = createAsyncThunk(
   "auth/login",
-  async (data: { username: string; password: string }, thunkApi) => {
+  async (payload: ILoginUserPayload, thunkApi) => {
     try {
-      const user = await AuthApi.login(data.username, data.password);
-      return thunkApi.fulfillWithValue(user.tokens);
+      const user = await AuthApi.login(payload);
+      return thunkApi.fulfillWithValue(user);
+    } catch (error) {
+      throw thunkApi.rejectWithValue(error);
+    }
+  }
+);
+
+const register = createAsyncThunk(
+  "auth/register",
+  async (payload: IRegisterUserPayload, thunkApi) => {
+    try {
+      const user = await AuthApi.register(payload);
+      return thunkApi.fulfillWithValue(user);
+    } catch (error) {
+      throw thunkApi.rejectWithValue(error);
+    }
+  }
+);
+
+const otpVerify = createAsyncThunk(
+  "auth/otp-verify",
+  async (payload: IOtpVerifyPayload, thunkApi) => {
+    try {
+      const user = await AuthApi.otpVerify(payload);
+      return thunkApi.fulfillWithValue(user);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
     }
@@ -47,21 +76,60 @@ const authSlice = createSlice({
     });
     builder.addCase(login.fulfilled, (state, action) => {
       state.loading = false;
-      state.user.tokens = action.payload;
+      state.user.token = action.payload.data.bearerToken ?? null;
+      state.user.detail = {
+        uid: 0,
+        name: "",
+        image: "",
+        mobile_no: action.meta.arg.mobile_no,
+        email: "",
+        city: "",
+        reg_date: "",
+        status: "",
+      };
+      if (action.payload.data.detail) {
+        console.log("ess hi")
+        state.user.detail = action.payload.data.detail;
+      }
     });
     builder.addCase(login.rejected, (state, action) => {
       state.loading = false;
     });
+    builder.addCase(register.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(register.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user.token = action.payload.data.bearerToken ?? null;
+
+      state.user.detail = action.payload.data.detail;
+    });
+    builder.addCase(register.rejected, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(otpVerify.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(otpVerify.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user.token = action.payload.data.bearerToken ?? null;
+
+      state.user.detail = action.payload.data.detail;
+    });
+    builder.addCase(otpVerify.rejected, (state, action) => {
+      state.loading = false;
+    });
   },
   reducers: {
-    clearAuth: (state) => {
+    logOut: (state) => {
       return initialState;
     },
   },
 });
 
-export { login };
-export const tokens = (state: RootState) => state.authSlice.user.tokens;
-export const loading = (state: RootState) => state.authSlice.loading;
-export const { clearAuth } = authSlice.actions;
+export { login,register,otpVerify };
+export const tokens = (state: RootState) => state.auth.user.token;
+export const user = (state: RootState) => state.auth.user.detail;
+export const loading = (state: RootState) => state.auth.loading;
+export const { logOut } = authSlice.actions;
 export default persistReducer(persistConfig, authSlice.reducer);
