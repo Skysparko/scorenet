@@ -11,6 +11,7 @@ export interface IRegisterUserPayload {
   password: string;
   email: string;
   city: string;
+  image:string
 }
 
 export interface ILoginUserPayload {

@@ -88,7 +88,7 @@ const authSlice = createSlice({
         status: "",
       };
       if (action.payload.data.detail) {
-        console.log("ess hi")
+        console.log("ess hi");
         state.user.detail = action.payload.data.detail;
       }
     });
@@ -101,8 +101,19 @@ const authSlice = createSlice({
     builder.addCase(register.fulfilled, (state, action) => {
       state.loading = false;
       state.user.token = action.payload.data.bearerToken ?? null;
-
-      state.user.detail = action.payload.data.detail;
+      state.user.detail = {
+        uid: 0,
+        name: "",
+        image: "",
+        mobile_no: action.meta.arg.mobile_no,
+        email: "",
+        city: "",
+        reg_date: "",
+        status: "",
+      };
+      if (action.payload.data.detail) {
+        state.user.detail = action.payload.data.detail;
+      }
     });
     builder.addCase(register.rejected, (state, action) => {
       state.loading = false;
@@ -127,7 +138,7 @@ const authSlice = createSlice({
   },
 });
 
-export { login,register,otpVerify };
+export { login, register, otpVerify };
 export const tokens = (state: RootState) => state.auth.user.token;
 export const user = (state: RootState) => state.auth.user.detail;
 export const loading = (state: RootState) => state.auth.loading;

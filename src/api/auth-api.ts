@@ -19,7 +19,11 @@ class AuthApiService {
   public async register(
     payload: IRegisterUserPayload
   ): Promise<IResponse<IUser>> {
-    return BaseApi._post(this.url("register"), payload);
+    let fd = new FormData();
+    for (let key in payload as IRegisterUserPayload) {
+      fd.append(key, (payload as any)[key]);
+    }
+    return BaseApi._post(this.url("register"), fd);
   }
 
   /**
