@@ -56,7 +56,6 @@ const OtpForm = (props: TProps) => {
       }
 
       if (val !== "") {
-        console.log("val", val);
         setOtp((preVal) => preVal + val);
         const next = target.nextElementSibling as HTMLInputElement;
         if (next) {
@@ -129,7 +128,7 @@ const OtpForm = (props: TProps) => {
             </Button>
 
             <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
-              <p>Didn't recieve code?</p>
+              <p>Didn&apos;t recieve code?</p>
               <a
                 className="flex flex-row items-center text-blue-600"
                 href="http://"
