@@ -7,7 +7,7 @@ export default function ProtectedRoute({
 }: {
   readonly children: ReactNode;
 }) {
-  const user = useAppSelector((s) => s.authSlice.user.tokens?.access_token);
+  const user = useAppSelector((s) => s.auth.user.token);
   const router = useRouter();
 
   // If user is not logged in, redirect to the login page
