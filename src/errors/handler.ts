@@ -6,48 +6,48 @@ export function HandleError(
   error: AppError | any,
   showPopup: boolean = true
 ): any {
-  switch (error.status) {
-    case 400:
-      console.log("error: " + error);
-      if (error?.data) {
-        if (typeof error.data.message === "string") {
-          message.error({
-            content: error.data.message,
-          });
-        } else {
-          const errorsArray = [];
-          const errors = new BadRequestException(error.data.message);
-          const parsedErrors = errors.getParsed();
-          for (const error in parsedErrors) {
-            errorsArray.push(errors.getError(error));
-          }
-          if (showPopup) {
-            message.error({
-              content: showError(errorsArray),
-            });
-          }
-        }
-      } else {
-        return {
-          errors: ["Unknow error."],
-          fieldErrors: [],
-        };
-      }
-      break;
-    case 401:
-      break;
-    default:
-      if (showPopup) {
-        message.error({
-          //   title: "Error",
-          content: error?.data?.message ?? "An error has occured.",
-        });
-      }
-      return {
-        errors: [error?.data?.message ?? "Unknow error occured."],
-        fieldsErrors: [],
-      };
-  }
+  // switch (error.status) {
+  //   case 400:
+  //     console.log("error: " + error);
+  //     if (error?.data) {
+  //       if (typeof error.data.message === "string") {
+  //         message.error({
+  //           content: error.data.message,
+  //         });
+  //       } else {
+  //         const errorsArray = [];
+  //         const errors = new BadRequestException(error.data.message);
+  //         const parsedErrors = errors.getParsed();
+  //         for (const error in parsedErrors) {
+  //           errorsArray.push(errors.getError(error));
+  //         }
+  //         if (showPopup) {
+  //           message.error({
+  //             content: showError(errorsArray),
+  //           });
+  //         }
+  //       }
+  //     } else {
+  //       return {
+  //         errors: ["Unknow error."],
+  //         fieldErrors: [],
+  //       };
+  //     }
+  //     break;
+  //   case 401:
+  //     break;
+  //   default:
+  //     if (showPopup) {
+  //       message.error({
+  //         //   title: "Error",
+  //         content: error?.data?.message ?? "An error has occured.",
+  //       });
+  //     }
+  //     return {
+  //       errors: [error?.data?.message ?? "Unknow error occured."],
+  //       fieldsErrors: [],
+  //     };
+  // }
 }
 
 export class BadRequestException extends Error {
