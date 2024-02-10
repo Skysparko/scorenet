@@ -13,10 +13,11 @@ type TProps = {
   show: boolean;
   onHide: () => void;
   setCroppedImage: React.Dispatch<React.SetStateAction<string>>;
+  setShowImageError: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CropperModal = (props: TProps) => {
-  const { image, show, onHide, setCroppedImage } = props;
+  const { image, show, onHide, setCroppedImage, setShowImageError } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [scale, setScale] = useState<number>(1);
   const [position, setPosition] = useState<{ x: number; y: number }>({
@@ -94,6 +95,7 @@ const CropperModal = (props: TProps) => {
         ctx.globalCompositeOperation = "destination-over";
         ctx.drawImage(canvas, 0, 0);
         setCroppedImage(croppedCanvas.toDataURL("image/png"));
+        setShowImageError(false);
         onHide();
       }
     }
@@ -134,11 +136,17 @@ const CropperModal = (props: TProps) => {
         </ModalBody>
         <ModalFooter className="flex justify-between">
           <div className="flex gap-2">
-            <Button onClick={handleZoomIn} color="secondary">+</Button>
-            <Button onClick={handleZoomOut} color="secondary">-</Button>
+            <Button onClick={handleZoomIn} color="secondary">
+              +
+            </Button>
+            <Button onClick={handleZoomOut} color="secondary">
+              -
+            </Button>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleCrop} color="primary">Crop Image</Button>
+            <Button onClick={handleCrop} color="primary">
+              Crop Image
+            </Button>
             <Button onClick={props.onHide} color="danger">
               Close
             </Button>

@@ -29,6 +29,7 @@ const validationSchema = object().shape({
 const RegisterForm = () => {
   const router = useRouter();
   const [croppedImage, setCroppedImage] = useState<string>("");
+  const [showImageError, setShowImageError] = useState(false);
   const formik = useFormik({
     initialValues: { ...initialValues, confirmPassword: "" },
     validationSchema,
@@ -50,8 +51,6 @@ const RegisterForm = () => {
             router.push("/verify-otp");
           }
         }
-      } else {
-        console.log("not image found");
       }
     } catch (error) {
       console.log("Error", error);
@@ -62,91 +61,116 @@ const RegisterForm = () => {
       <ImageCropper
         croppedImage={croppedImage}
         setCroppedImage={setCroppedImage}
+        showImageError={showImageError}
+        setShowImageError={setShowImageError}
       />
       <div>
         <form
           className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2"
-          onSubmit={formik.handleSubmit}
+          onSubmit={(e) => {
+            !croppedImage && setShowImageError(true);
+            formik.handleSubmit(e);
+          }}
         >
           <div>
-            <label
-              htmlFor="name"
-              className="block mb-2 text-sm text-gray-600 dark:text-gray-200"
-            >
-              Name
-            </label>
             <Input
               type="text"
               id="name"
               name="name"
-              placeholder="John"
+              label="Name"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              isInvalid={(formik.errors.name && formik.touched.name) as boolean}
+              errorMessage={
+                formik.errors.name && formik.touched.name && formik.errors.name
+              }
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
-              Phone number
-            </label>
             <Input
-              type="text"
+              type="number"
               name="mobile_no"
-              placeholder="XXX-XX-XXXX-XXX"
+              label="Mobile number"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              isInvalid={
+                (formik.errors.mobile_no && formik.touched.mobile_no) as boolean
+              }
+              errorMessage={
+                formik.errors.mobile_no &&
+                formik.touched.mobile_no &&
+                formik.errors.mobile_no
+              }
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
-              Email address
-            </label>
             <Input
               type="email"
               name="email"
-              placeholder="johnsnow@example.com"
+              label="Email address"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              isInvalid={
+                (formik.errors.email && formik.touched.email) as boolean
+              }
+              errorMessage={
+                formik.errors.email &&
+                formik.touched.email &&
+                formik.errors.email
+              }
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
-              City
-            </label>
             <Input
               type="text"
               name="city"
-              placeholder="jodhpur"
+              label="City"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              isInvalid={(formik.errors.city && formik.touched.city) as boolean}
+              errorMessage={
+                formik.errors.city && formik.touched.city && formik.errors.city
+              }
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
-              Password
-            </label>
             <Input
               type="password"
               name="password"
-              placeholder="Enter your password"
+              label="Password"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              isInvalid={
+                (formik.errors.password && formik.touched.password) as boolean
+              }
+              errorMessage={
+                formik.errors.password &&
+                formik.touched.password &&
+                formik.errors.password
+              }
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-sm text-gray-600 dark:text-gray-200">
-              Confirm password
-            </label>
             <Input
               type="password"
               name="confirmPassword"
-              placeholder="Enter your password"
+              label="Confirm Password"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              isInvalid={
+                (formik.errors.confirmPassword &&
+                  formik.touched.confirmPassword) as boolean
+              }
+              errorMessage={
+                formik.errors.confirmPassword &&
+                formik.touched.confirmPassword &&
+                formik.errors.confirmPassword
+              }
             />
           </div>
 

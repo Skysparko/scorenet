@@ -3,15 +3,17 @@ import React, { SetStateAction, useRef, useState } from "react";
 import CropperModal from "./modal";
 import NextImage from "next/image";
 
-type TProps={
-  croppedImage:string,
-  setCroppedImage:React.Dispatch<React.SetStateAction<string>>
-}
+type TProps = {
+  croppedImage: string;
+  setCroppedImage: React.Dispatch<React.SetStateAction<string>>;
+  showImageError: boolean;
+  setShowImageError: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const ImageCropper = (props:TProps) => {
-  const {croppedImage,setCroppedImage} = props;
+const ImageCropper = (props: TProps) => {
+  const { croppedImage, setCroppedImage, showImageError,setShowImageError } = props;
   const [image, setImage] = useState<HTMLImageElement | null>(null);
-  
+
   const [showCropperModal, setShowCropperModal] = useState(false);
 
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -46,11 +48,14 @@ const ImageCropper = (props:TProps) => {
         show={showCropperModal}
         onHide={handleModalHide}
         setCroppedImage={setCroppedImage}
+        setShowImageError={setShowImageError}
       />
       <div className="flex flex-col justify-center items-center">
         <label
           htmlFor="image"
-          className="border border-gray-300 rounded-xl shadow cursor-pointer"
+          className={`${
+            showImageError ? "border-red-600 bg-red-100" : "border-gray-300"
+          } border  rounded-xl shadow cursor-pointer`}
         >
           {croppedImage ? (
             <NextImage
@@ -68,6 +73,7 @@ const ImageCropper = (props:TProps) => {
             />
           )}
         </label>
+        {showImageError && <p className="text-red-500 text-xs font-medium">Required</p>}
         <input
           type="file"
           onChange={handleFileChange}
