@@ -1,12 +1,13 @@
 "use client";
 import { useAppDispatch } from "@/store/hooks";
-import { login } from "@/store/slice/auth-slice";
+import { loading as LD, login } from "@/store/slice/auth-slice";
 import { ILoginUserPayload } from "@/types/auth.type";
 import { Button, Input } from "@nextui-org/react";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useSelector } from "react-redux";
 import { object, string } from "yup";
 
 const initialValues: ILoginUserPayload = {
@@ -27,10 +28,10 @@ const LoginForm = () => {
   });
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const loading = useSelector(LD)
   async function handleSubmit() {
     try {
       const res = await dispatch(login(formik.values)).unwrap();
-      console.log("loginSuccess", res);
       if (res.success) {
         if (res.data.bearerToken) {
           router.push("/");
@@ -85,7 +86,7 @@ const LoginForm = () => {
         </div>
 
         <div className="mt-6">
-          <Button type="submit" color="primary" className="w-full" >
+          <Button type="submit" color="primary" className="w-full" isLoading={loading}>
             Sign in
           </Button>
         </div>

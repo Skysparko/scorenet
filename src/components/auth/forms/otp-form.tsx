@@ -1,11 +1,12 @@
 "use client";
 import { useAppDispatch } from "@/store/hooks";
-import { otpVerify } from "@/store/slice/auth-slice";
+import { otpVerify, loading as LD } from "@/store/slice/auth-slice";
 import { IOtpVerifyPayload } from "@/types/auth.type";
 import { Button } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { object, string } from "yup";
 
 type TProps = {
@@ -14,14 +15,15 @@ type TProps = {
 
 const OtpForm = (props: TProps) => {
   const { mobileNo } = props;
+  const loading = useSelector(LD);
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [otp, setOtp] = useState("");
-  const [otpError,setOtpError] = useState(false)
+  const [otpError, setOtpError] = useState(false);
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
-      if(otp.length === 4){
+      if (otp.length === 4) {
         const payload: IOtpVerifyPayload = {
           mobile_no: mobileNo,
           otp: otp,
@@ -34,10 +36,9 @@ const OtpForm = (props: TProps) => {
             router.push("/verify-otp");
           }
         }
-      }else{
-        setOtpError(true)
+      } else {
+        setOtpError(true);
       }
-      
     } catch (error) {
       console.log("loginError", error);
     }
@@ -55,7 +56,7 @@ const OtpForm = (props: TProps) => {
       }
 
       if (val !== "") {
-        console.log("val",val)
+        console.log("val", val);
         setOtp((preVal) => preVal + val);
         const next = target.nextElementSibling as HTMLInputElement;
         if (next) {
@@ -91,11 +92,11 @@ const OtpForm = (props: TProps) => {
     };
   }, []);
 
-  useEffect(()=>{
-    if(otp.length === 4){
-      setOtpError(false)
+  useEffect(() => {
+    if (otp.length === 4) {
+      setOtpError(false);
     }
-  },[otp])
+  }, [otp]);
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -107,7 +108,9 @@ const OtpForm = (props: TProps) => {
             {Array.from({ length: 4 }).map((_, index) => (
               <input
                 key={index}
-                className={` ${otpError?"border-red-600":"border-gray-200"} flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border  text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700 input w-16 h-16`}
+                className={` ${
+                  otpError ? "border-red-600" : "border-gray-200"
+                } flex flex-col items-center justify-center text-center px-5 outline-none rounded-xl border  text-lg bg-white focus:bg-gray-50 focus:ring-1 ring-blue-700 input w-16 h-16`}
                 type="text"
                 name=""
                 id=""
@@ -121,7 +124,7 @@ const OtpForm = (props: TProps) => {
           </div>
 
           <div className="flex flex-col space-y-5">
-            <Button type="submit" color="primary">
+            <Button type="submit" color="primary" isLoading={loading}>
               Verify Account
             </Button>
 

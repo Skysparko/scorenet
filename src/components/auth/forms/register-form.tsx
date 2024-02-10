@@ -1,12 +1,13 @@
 "use client";
 import ImageCropper from "@/components/cropper/image-cropper";
 import { useAppDispatch } from "@/store/hooks";
-import { register } from "@/store/slice/auth-slice";
+import { register, loading as LD } from '@/store/slice/auth-slice';
 import { IRegisterUserPayload } from "@/types/auth.type";
 import { Button, Input } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { object, ref, string } from "yup";
 const initialValues = {
   city: "",
@@ -30,6 +31,7 @@ const RegisterForm = () => {
   const router = useRouter();
   const [croppedImage, setCroppedImage] = useState<string>("");
   const [showImageError, setShowImageError] = useState(false);
+  const loading = useSelector(LD)
   const formik = useFormik({
     initialValues: { ...initialValues, confirmPassword: "" },
     validationSchema,
@@ -174,7 +176,7 @@ const RegisterForm = () => {
             />
           </div>
 
-          <Button color="primary" type="submit">
+          <Button color="primary" type="submit" isLoading={loading}>
             <span>Sign Up </span>
 
             <svg
