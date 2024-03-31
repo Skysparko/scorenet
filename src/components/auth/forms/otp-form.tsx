@@ -1,6 +1,8 @@
 "use client";
 import { useAppDispatch } from "@/store/hooks";
 import { otpVerify, loading as LD } from "@/store/slice/auth-slice";
+import { tokens as TK } from "@/store/slice/auth-slice";
+
 import { IOtpVerifyPayload } from "@/types/auth.type";
 import { Button } from "@nextui-org/react";
 import { useFormik } from "formik";
@@ -16,6 +18,7 @@ type TProps = {
 const OtpForm = (props: TProps) => {
   const { mobileNo } = props;
   const loading = useSelector(LD);
+  const token = useSelector(TK)
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [otp, setOtp] = useState("");
@@ -28,7 +31,10 @@ const OtpForm = (props: TProps) => {
           mobile_no: mobileNo,
           otp: otp,
         };
-        const res = await dispatch(otpVerify(payload)).unwrap();
+        const headers = {
+          Authorization:  `Bearer ${token}`
+        }
+        const res = await dispatch(otpVerify({payload,headers})).unwrap();
         if (res.success) {
           if (res.data.bearer_token) {
             router.push("/");

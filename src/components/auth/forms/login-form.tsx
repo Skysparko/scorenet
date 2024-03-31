@@ -1,6 +1,8 @@
 "use client";
 import { useAppDispatch } from "@/store/hooks";
 import { loading as LD, login } from "@/store/slice/auth-slice";
+import { tokens as TK } from "@/store/slice/auth-slice";
+
 import { ILoginUserPayload } from "@/types/auth.type";
 import { Button, Input } from "@nextui-org/react";
 import { useFormik } from "formik";
@@ -29,9 +31,13 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const loading = useSelector(LD)
+  const token = useSelector(TK)
   async function handleSubmit() {
     try {
-      const res = await dispatch(login(formik.values)).unwrap();
+      const headers = {
+        Authorization:  `Bearer ${token}`
+      }
+      const res = await dispatch(login({payload:formik.values,headers})).unwrap();
       if (res.success) {
         if (res.data.bearer_token) {
           router.push("/");

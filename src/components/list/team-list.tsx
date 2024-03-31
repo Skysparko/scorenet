@@ -28,6 +28,8 @@ import { ITeam } from "@/types/team.type";
 import TeamModal from "../modals/team-modal";
 import { deleteTeam } from "@/store/slice/team-slice";
 import { useAppDispatch } from "../../store/hooks";
+import { tokens as TK } from "@/store/slice/auth-slice";
+import { useSelector } from "react-redux";
 
 type TProps = {
   columns: Array<{ name: string; uid: string; sortable?: boolean }>;
@@ -42,6 +44,10 @@ function capitalize(str: string) {
 export default function TeamList(props: TProps) {
   const { data, columns, INITIAL_VISIBLE_COLUMNS } = props;
   const dispatch = useAppDispatch();
+  const token = useSelector(TK)
+  const headers = {
+    Authorization:  `Bearer ${token}`
+  }
   const [type, setType] = useState<"ADD" | "EDIT" | "VIEW">("ADD");
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [team, setTeam] = useState<ITeam>();
@@ -144,7 +150,7 @@ export default function TeamList(props: TProps) {
                   Edit
                 </DropdownItem>
                 <DropdownItem
-                  onClick={() => dispatch(deleteTeam(tour.tmid as string))}
+                  onClick={() => dispatch(deleteTeam({id:tour.tmid as string,headers}))}
                 >
                   Delete
                 </DropdownItem>

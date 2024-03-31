@@ -36,9 +36,9 @@ const initialState: TState = {
 
 const login = createAsyncThunk(
   "auth/login",
-  async (payload: ILoginUserPayload, thunkApi) => {
+  async ({payload,headers}:{payload: ILoginUserPayload,headers:any}, thunkApi) => {
     try {
-      const user = await AuthApi.login(payload);
+      const user = await AuthApi.login(payload,headers);
       return thunkApi.fulfillWithValue(user);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -48,9 +48,9 @@ const login = createAsyncThunk(
 
 const register = createAsyncThunk(
   "auth/register",
-  async (payload: IRegisterUserPayload, thunkApi) => {
+  async ({payload,headers}:{payload: IRegisterUserPayload,headers:any}, thunkApi) => {
     try {
-      const user = await AuthApi.register(payload);
+      const user = await AuthApi.register(payload,headers);
       return thunkApi.fulfillWithValue(user);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -60,9 +60,9 @@ const register = createAsyncThunk(
 
 const otpVerify = createAsyncThunk(
   "auth/otp-verify",
-  async (payload: IOtpVerifyPayload, thunkApi) => {
+  async ({payload,headers}:{payload: IOtpVerifyPayload,headers:any}, thunkApi) => {
     try {
-      const user = await AuthApi.otpVerify(payload);
+      const user = await AuthApi.otpVerify(payload,headers);
       return thunkApi.fulfillWithValue(user);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -72,9 +72,9 @@ const otpVerify = createAsyncThunk(
 
 const updateUser = createAsyncThunk(
   "auth/update-user",
-  async (payload: IUpdateUserPayload, thunkApi) => {
+  async ({payload,headers}:{payload: IUpdateUserPayload,headers:any}, thunkApi) => {
     try {
-      const user = await AuthApi.updateUser(payload);
+      const user = await AuthApi.updateUser(payload,headers);
       return thunkApi.fulfillWithValue(user);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -84,9 +84,9 @@ const updateUser = createAsyncThunk(
 
 const updateUserPassword = createAsyncThunk(
   "auth/update-password",
-  async (payload: IUpdatePasswordPayload, thunkApi) => {
+  async ({payload,headers}:{payload: IUpdatePasswordPayload,headers:any}, thunkApi) => {
     try {
-      const user = await AuthApi.updatePassword(payload);
+      const user = await AuthApi.updatePassword(payload,headers);
       return thunkApi.fulfillWithValue(user);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -108,7 +108,7 @@ const authSlice = createSlice({
         uid: 0,
         name: "",
         image: "",
-        mobile_no: action.meta.arg.mobile_no,
+        mobile_no: action.meta.arg.payload.mobile_no,
         email: "",
         city: "",
         reg_date: "",
@@ -133,7 +133,7 @@ const authSlice = createSlice({
         uid: 0,
         name: "",
         image: "",
-        mobile_no: action.meta.arg.mobile_no,
+        mobile_no: action.meta.arg.payload.mobile_no,
         email: "",
         city: "",
         reg_date: "",

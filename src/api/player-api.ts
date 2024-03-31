@@ -13,22 +13,23 @@ class PlayerApiService {
    * @returns Player
    */
   public async create(
-    payload: ICreatePlayerPayload
+    payload: ICreatePlayerPayload,
+    headers: any
   ): Promise<IResponse<IPlayer>> {
     let fd = new FormData();
 
     for (let key in payload as ICreatePlayerPayload) {
       fd.append(key, (payload as any)[key]);
     }
-    return BaseApi._post(this.url("create"), fd);
+    return BaseApi._post(this.url("create"), fd, headers);
   }
 
   /**
    * Get all Player
    * @returns List of Players
    */
-  public async getAll(): Promise<IResponse<IPlayer>> {
-    return BaseApi._get(this.url(""));
+  public async getAll(headers: any): Promise<IResponse<IPlayer>> {
+    return BaseApi._get(this.url(""), null, headers);
   }
 
   /**
@@ -36,8 +37,8 @@ class PlayerApiService {
    * @params id
    * @returns Player
    */
-  public async get(id: string): Promise<IResponse<IPlayer>> {
-    return BaseApi._get(this.url(id));
+  public async get(id: string, headers: any): Promise<IResponse<IPlayer>> {
+    return BaseApi._get(this.url(id), null, headers);
   }
 
   /**
@@ -47,14 +48,15 @@ class PlayerApiService {
    */
   public async update(
     payload: IUpdatePlayerPayload,
-    id: string
+    id: string,
+    headers: any
   ): Promise<IResponse<IPlayer>> {
     let fd = new FormData();
 
     for (let key in payload as ICreatePlayerPayload) {
       fd.append(key, (payload as any)[key]);
     }
-    return BaseApi._put(this.url(`${id}`), fd);
+    return BaseApi._put(this.url(`${id}`), fd, headers);
   }
 
   /**
@@ -62,8 +64,8 @@ class PlayerApiService {
    * @param id Player id
    * @returns void
    */
-  public async delete(id: string): Promise<void> {
-    return BaseApi._delete(this.url(`${id}`));
+  public async delete(id: string, headers: any): Promise<void> {
+    return BaseApi._delete(this.url(`${id}`), null, headers);
   }
 }
 const PlayerApi = new PlayerApiService();

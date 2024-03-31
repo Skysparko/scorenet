@@ -22,9 +22,9 @@ const initialState: TState = {
 
 const fetchTournaments = createAsyncThunk(
   "fetch/tournaments",
-  async (_, thunkApi) => {
+  async (headers: any, thunkApi) => {
     try {
-      return thunkApi.fulfillWithValue(await TournamentApi.getAll());
+      return thunkApi.fulfillWithValue(await TournamentApi.getAll(headers));
     } catch (error) {
       return thunkApi.rejectWithValue(error);
     }
@@ -33,9 +33,12 @@ const fetchTournaments = createAsyncThunk(
 
 const createTournament = createAsyncThunk(
   "tournament/create",
-  async (payload: ICreateTournamentPayload, thunkApi) => {
+  async (
+    { payload, headers }: { payload: ICreateTournamentPayload; headers: any },
+    thunkApi
+  ) => {
     try {
-      const tournament = await TournamentApi.create(payload);
+      const tournament = await TournamentApi.create(payload, headers);
       return thunkApi.fulfillWithValue(tournament);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -46,11 +49,15 @@ const createTournament = createAsyncThunk(
 const updateTournament = createAsyncThunk(
   "tournament/update",
   async (
-    { payload, id }: { payload: IUpdateTournamentPayload; id: string },
+    {
+      payload,
+      id,
+      headers,
+    }: { payload: IUpdateTournamentPayload; id: string; headers: any },
     thunkApi
   ) => {
     try {
-      const tournament = await TournamentApi.update(payload, id);
+      const tournament = await TournamentApi.update(payload, id, headers);
       return thunkApi.fulfillWithValue(tournament);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -60,9 +67,9 @@ const updateTournament = createAsyncThunk(
 
 const deleteTournament = createAsyncThunk(
   "tournament/delete",
-  async (id: string, thunkApi) => {
+  async ({ id, headers }: { id: string; headers: any }, thunkApi) => {
     try {
-      return thunkApi.fulfillWithValue(await TournamentApi.delete(id));
+      return thunkApi.fulfillWithValue(await TournamentApi.delete(id, headers));
     } catch (error) {
       return thunkApi.rejectWithValue(error);
     }
@@ -120,7 +127,7 @@ const tournamentSlice = createSlice({
       console.log("action", action.meta.arg);
       state.tournaments =
         state.tournaments?.filter(
-          (tournament) => tournament.tnid !== action.meta.arg
+          (tournament) => tournament.tnid !== action.meta.arg.id
         ) ?? null;
     });
     builder.addCase(deleteTournament.rejected, (state, action) => {

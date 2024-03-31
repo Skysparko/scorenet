@@ -1,7 +1,10 @@
-
 import { IResponse } from "@/types/common.type";
 import * as BaseApi from "./base-api";
-import { ICreateTournamentPayload, ITournament, IUpdateTournamentPayload } from "@/types/tournament.type";
+import {
+  ICreateTournamentPayload,
+  ITournament,
+  IUpdateTournamentPayload,
+} from "@/types/tournament.type";
 class TournamentApiService {
   private url = (api: string) => `tournaments/${api}`;
   /**
@@ -9,21 +12,24 @@ class TournamentApiService {
    * @param tournament
    * @returns Tournament
    */
-  public async create(payload: ICreateTournamentPayload): Promise<IResponse<ITournament>> {
+  public async create(
+    payload: ICreateTournamentPayload,
+    headers: any
+  ): Promise<IResponse<ITournament>> {
     let fd = new FormData();
 
     for (let key in payload as ICreateTournamentPayload) {
       fd.append(key, (payload as any)[key]);
     }
-    return BaseApi._post(this.url("create"), fd);
-  } 
+    return BaseApi._post(this.url("create"), fd, headers);
+  }
 
   /**
    * Get all tournament
    * @returns List of tournaments
    */
-  public async getAll(): Promise<IResponse<ITournament>> {
-    return BaseApi._get(this.url(""));
+  public async getAll(headers: any): Promise<IResponse<ITournament>> {
+    return BaseApi._get(this.url(""), null, headers);
   }
 
   /**
@@ -31,8 +37,8 @@ class TournamentApiService {
    * @params id
    * @returns tournament
    */
-  public async get(id:string): Promise<IResponse<ITournament>> {
-    return BaseApi._get(this.url(id));
+  public async get(id: string, headers: any): Promise<IResponse<ITournament>> {
+    return BaseApi._get(this.url(id), null, headers);
   }
 
   /**
@@ -40,13 +46,17 @@ class TournamentApiService {
    * @param tournament
    * @returns Tournament
    */
-  public async update(payload: IUpdateTournamentPayload,id:string): Promise<IResponse<ITournament>>{
+  public async update(
+    payload: IUpdateTournamentPayload,
+    id: string,
+    headers: any
+  ): Promise<IResponse<ITournament>> {
     let fd = new FormData();
 
     for (let key in payload as ICreateTournamentPayload) {
       fd.append(key, (payload as any)[key]);
     }
-    return BaseApi._put(this.url(`${id}`), fd);
+    return BaseApi._put(this.url(`${id}`), fd, headers);
   }
 
   /**
@@ -54,8 +64,8 @@ class TournamentApiService {
    * @param id tournament id
    * @returns void
    */
-  public async delete(id: string): Promise<void> {
-    return BaseApi._delete(this.url(`${id}`));
+  public async delete(id: string, headers: any): Promise<void> {
+    return BaseApi._delete(this.url(`${id}`), null, headers);
   }
 }
 const TournamentApi = new TournamentApiService();

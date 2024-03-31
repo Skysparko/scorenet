@@ -2,6 +2,7 @@
 import TeamList from "@/components/list/team-list";
 import { useAppDispatch } from "@/store/hooks";
 import { fetchTeams, teams as TD } from "@/store/slice/team-slice";
+import { tokens as TK } from "@/store/slice/auth-slice";
 import { ITeam } from "@/types/team.type";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,9 +46,13 @@ const INITIAL_VISIBLE_COLUMNS = [
 const Team = () => {
   const dispatch = useAppDispatch();
   const teams = useSelector(TD);
+  const token = useSelector(TK)
   const fetchTeamData = async () => {
     try {
-      const data = await dispatch(fetchTeams()).unwrap();
+      const headers = {
+        Authorization:  `Bearer ${token}`
+      }
+      const data = await dispatch(fetchTeams(headers)).unwrap();
     } catch (error) {}
   };
   useEffect(() => {

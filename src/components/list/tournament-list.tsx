@@ -28,6 +28,8 @@ import { ITournament } from "@/types/tournament.type";
 import TournamentModal from "../modals/tournament-modal";
 import { deleteTournament } from "@/store/slice/tournament-slice";
 import { useAppDispatch } from "../../store/hooks";
+import { tokens as TK } from "@/store/slice/auth-slice";
+import { useSelector } from "react-redux";
 
 type TProps = {
   columns: Array<{ name: string; uid: string; sortable?: boolean }>;
@@ -43,6 +45,10 @@ function capitalize(str: string) {
 export default function TournamentList(props: TProps) {
   const { data, columns, INITIAL_VISIBLE_COLUMNS } = props;
   const dispatch = useAppDispatch();
+  const token = useSelector(TK)
+  const headers = {
+    Authorization:  `Bearer ${token}`
+  }
   const [type, setType] = useState<"ADD" | "EDIT" | "VIEW">("ADD");
   const [showTournamentModal, setShowTournamentModal] = useState(false);
   const [tournament,setTournament] = useState<ITournament>()
@@ -146,7 +152,7 @@ export default function TournamentList(props: TProps) {
                 </DropdownItem>
                 <DropdownItem
                   onClick={() =>
-                    dispatch(deleteTournament(tour.tnid as string))
+                    dispatch(deleteTournament({id:tour.tnid as string,headers}))
                   }
                 >
                   Delete

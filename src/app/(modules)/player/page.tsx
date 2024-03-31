@@ -1,6 +1,7 @@
 "use client";
 import PlayerList from "@/components/list/player-list";
 import { useAppDispatch } from "@/store/hooks";
+import { tokens as TK } from "@/store/slice/auth-slice";
 import { fetchPlayers, players as TD } from "@/store/slice/player-slice";
 import { IPlayer } from "@/types/player.type";
 import { useEffect } from "react";
@@ -28,9 +29,13 @@ const INITIAL_VISIBLE_COLUMNS = [
 const Player = () => {
   const dispatch = useAppDispatch();
   const players = useSelector(TD);
+  const token = useSelector(TK)
   const fetchPlayerData = async () => {
     try {
-      const data = await dispatch(fetchPlayers()).unwrap();
+      const headers = {
+        Authorization:  `Bearer ${token}`
+      }
+      const data = await dispatch(fetchPlayers(headers)).unwrap();
     } catch (error) {}
   };
   useEffect(() => {

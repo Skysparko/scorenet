@@ -20,19 +20,25 @@ const initialState: TState = {
   loading: false,
 };
 
-const fetchTeams = createAsyncThunk("fetch/teams", async (_, thunkApi) => {
-  try {
-    return thunkApi.fulfillWithValue(await TeamApi.getAll());
-  } catch (error) {
-    return thunkApi.rejectWithValue(error);
+const fetchTeams = createAsyncThunk(
+  "fetch/teams",
+  async (headers: any, thunkApi) => {
+    try {
+      return thunkApi.fulfillWithValue(await TeamApi.getAll(headers));
+    } catch (error) {
+      return thunkApi.rejectWithValue(error);
+    }
   }
-});
+);
 
 const createTeam = createAsyncThunk(
   "team/create",
-  async (payload: ICreateTeamPayload, thunkApi) => {
+  async (
+    { payload, headers }: { payload: ICreateTeamPayload; headers: any },
+    thunkApi
+  ) => {
     try {
-      const team = await TeamApi.create(payload);
+      const team = await TeamApi.create(payload, headers);
       return thunkApi.fulfillWithValue(team);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -43,11 +49,15 @@ const createTeam = createAsyncThunk(
 const updateTeam = createAsyncThunk(
   "team/update",
   async (
-    { payload, id }: { payload: IUpdateTeamPayload; id: string },
+    {
+      payload,
+      id,
+      headers,
+    }: { payload: IUpdateTeamPayload; id: string; headers: any },
     thunkApi
   ) => {
     try {
-      const team = await TeamApi.update(payload, id);
+      const team = await TeamApi.update(payload, id, headers);
       return thunkApi.fulfillWithValue(team);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -57,9 +67,9 @@ const updateTeam = createAsyncThunk(
 
 const deleteTeam = createAsyncThunk(
   "team/delete",
-  async (id: string, thunkApi) => {
+  async ({ id, headers }: { id: string; headers: any }, thunkApi) => {
     try {
-      return thunkApi.fulfillWithValue(await TeamApi.delete(id));
+      return thunkApi.fulfillWithValue(await TeamApi.delete(id, headers));
     } catch (error) {
       return thunkApi.rejectWithValue(error);
     }
@@ -116,7 +126,7 @@ const teamSlice = createSlice({
       state.loading = false;
       console.log("action", action.meta.arg);
       state.teams =
-        state.teams?.filter((team) => team.tmid !== action.meta.arg) ?? null;
+        state.teams?.filter((team) => team.tmid !== action.meta.arg.id) ?? null;
     });
     builder.addCase(deleteTeam.rejected, (state, action) => {
       state.loading = false;

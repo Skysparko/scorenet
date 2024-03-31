@@ -23,6 +23,7 @@ import ImageCropper from "../cropper/image-cropper";
 import Image from "next/image";
 import NextImage from "next/image";
 import { getPhoto } from "../../configs/api-config";
+import { tokens as TK } from "@/store/slice/auth-slice";
 
 type TProps = {
   show: boolean;
@@ -48,6 +49,10 @@ const ProfileModal = (props: TProps) => {
   const [showImageError, setShowImageError] = useState(false);
   const loading = useSelector(LD);
   const imagePath = useSelector(IP);
+  const token = useSelector(TK)
+  const headers = {
+    Authorization:  `Bearer ${token}`
+  }
 
   console.log("user", user, imagePath);
   const validationSchema = () => {
@@ -85,7 +90,7 @@ const ProfileModal = (props: TProps) => {
             ...formik.values,
             image: file,
           };
-          const res = await dispatch(updateUser(payload)).unwrap();
+          const res = await dispatch(updateUser({payload,headers})).unwrap();
           if (res.success) {
             onHide();
             setIsEditable(false);
@@ -96,7 +101,7 @@ const ProfileModal = (props: TProps) => {
           old_password: formik.values.oldPassword,
           new_password: formik.values.newPassword,
         };
-        const res = await dispatch(updateUserPassword(payload)).unwrap();
+        const res = await dispatch(updateUserPassword({payload,headers})).unwrap();
         if (res.success) {
           onHide();
           setIsEditable(false);

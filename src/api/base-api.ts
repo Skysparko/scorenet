@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { store } from "@/store";
 export const _post = async <T>(api: string, data: any, headers: any = null) => {
   try {
-    const state = store.getState()
+    // const state = store.getState()
     let response: AxiosResponse<T, any>;
     if (headers) {
       response = await appAxios.post<T>(api, data, {
@@ -15,9 +15,9 @@ export const _post = async <T>(api: string, data: any, headers: any = null) => {
       });
     } else {
       response = await appAxios.post<T>(api, data,{
-        headers:{
-          Authorization:  `Bearer ${state?.auth?.user?.token}`
-        }
+        // headers:{
+        //   Authorization:  `Bearer ${state?.auth?.user?.token}`
+        // }
       });
     }
     if (response.status === 200 || response.status === 201) {
@@ -38,16 +38,16 @@ export const _post = async <T>(api: string, data: any, headers: any = null) => {
 export const _put = async <T>(api: string, data: any, headers: any = null) => {
   try {
     let response: AxiosResponse<T, any>;
-    const state = store.getState()
+    // const state = store.getState()
     if (headers) {
       response = await appAxios.put<T>(api, data, {
         headers,
       });
     } else {
       response = await appAxios.put<T>(api, data,{
-        headers:{
-          Authorization:  `Bearer ${state?.auth?.user?.token}`
-        }
+        // headers:{
+        //   Authorization:  `Bearer ${state?.auth?.user?.token}`
+        // }
       });
     }
     if (response.status === 200) {
@@ -70,7 +70,7 @@ export const _get = async <T>(
 ) => {
   try {
     let url = api;
-    const state = store.getState()
+    // const state = store.getState()
     if (data) {
       url += `?${qs.stringify(data, {
         arrayFormat: "repeat",
@@ -86,9 +86,9 @@ export const _get = async <T>(
     } else {
       console.log('hi')
       response = await appAxios.get<T>(url,{
-        headers:{
-          Authorization:  `Bearer ${state?.auth?.user?.token}`
-        }
+        // headers:{
+        //   Authorization:  `Bearer ${state?.auth?.user?.token}`
+        // }
       });
     }
     console.log("response: " + response.data)
@@ -112,16 +112,16 @@ export const _patch = async <T>(
 ) => {
   try {
     let response: AxiosResponse<T, any>;
-    const state = store.getState()
+    // const state = store.getState()
     if (headers) {
       response = await appAxios.patch<T>(api, data, {
         headers,
       });
     } else {
       response = await appAxios.patch<T>(api, data,{
-        headers:{
-          Authorization:  `Bearer ${state?.auth?.user?.token}`
-        }
+        // headers:{
+        //   Authorization:  `Bearer ${state?.auth?.user?.token}`
+        // }
       });
     }
     if (response.status === 200) {
@@ -144,7 +144,7 @@ export const _delete = async <T>(
 ) => {
   try {
     let url = api;
-    const state = store.getState()
+    // const state = store.getState()
     if (data) {
       url += "?";
       for (let key in data) {
@@ -159,9 +159,9 @@ export const _delete = async <T>(
       });
     } else {
       response = await appAxios.delete<T>(url,{
-        headers:{
-          Authorization:  `Bearer ${state?.auth?.user?.token}`
-        }
+        // headers:{
+        //   Authorization:  `Bearer ${state?.auth?.user?.token}`
+        // }
       });
     }
     if (response.status === 200) {

@@ -15,6 +15,7 @@ import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { date, object, ref, string } from "yup";
+import { tokens as TK } from "@/store/slice/auth-slice";
 import { loading as LD, imagePath as IP } from "@/store/slice/auth-slice";
 import { IUpdateUserPayload } from "@/types/auth.type";
 import ImageCropper from "../cropper/image-cropper";
@@ -57,6 +58,10 @@ const PlayerModal = (props: TProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [showImageError, setShowImageError] = useState(false);
   const loading = useSelector(LD);
+  const token = useSelector(TK);
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   const imagePath = useSelector(IP);
   const tournaments = useSelector(TD);
   const statusType = ["Active", "Inactive"];
@@ -83,7 +88,9 @@ const PlayerModal = (props: TProps) => {
             image: file,
           };
           console.log(file, "file");
-          const res = await dispatch(createPlayer(payload)).unwrap();
+          const res = await dispatch(
+            createPlayer({ payload, headers })
+          ).unwrap();
           if (res.success) {
             onHide();
           }
@@ -96,7 +103,7 @@ const PlayerModal = (props: TProps) => {
           };
           console.log(file, "file");
           const res = await dispatch(
-            updatePlayer({ payload, id: data?.pid as string })
+            updatePlayer({ payload, id: data?.pid as string, headers })
           ).unwrap();
           if (res.success) {
             onHide();
@@ -110,7 +117,7 @@ const PlayerModal = (props: TProps) => {
 
   const fetchTournamentData = async () => {
     try {
-      const data = await dispatch(fetchTournaments()).unwrap();
+      const data = await dispatch(fetchTournaments(headers)).unwrap();
     } catch (error) {}
   };
   useEffect(() => {

@@ -5,6 +5,8 @@ import {
   fetchTournaments,
   tournaments as TD,
 } from "@/store/slice/tournament-slice";
+import { tokens as TK } from "@/store/slice/auth-slice";
+
 import { ITournament } from "@/types/tournament.type";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,9 +40,13 @@ const INITIAL_VISIBLE_COLUMNS = [
 const Tournament = () => {
   const dispatch = useAppDispatch();
   const tournaments = useSelector(TD);
+  const token = useSelector(TK)
   const fetchTournamentData = async () => {
     try {
-      const data = await dispatch(fetchTournaments()).unwrap();
+      const headers = {
+        Authorization:  `Bearer ${token}`
+      }
+      const data = await dispatch(fetchTournaments(headers)).unwrap();
     } catch (error) {}
   };
   useEffect(() => {

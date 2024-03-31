@@ -32,6 +32,7 @@ import {
   ITournament,
   IUpdateTournamentPayload,
 } from "@/types/tournament.type";
+import { tokens as TK } from "@/store/slice/auth-slice";
 
 type TProps = {
   show: boolean;
@@ -91,6 +92,10 @@ const TournamentModal = (props: TProps) => {
     onSubmit: handleSubmit,
   });
   const dispatch = useAppDispatch();
+  const token = useSelector(TK)
+  const headers = {
+    Authorization:  `Bearer ${token}`
+  }
   async function handleSubmit() {
     try {
       if (type === "ADD") {
@@ -107,7 +112,7 @@ const TournamentModal = (props: TProps) => {
             image: file,
           };
           console.log(file, "file");
-          const res = await dispatch(createTournament(payload)).unwrap();
+          const res = await dispatch(createTournament({payload,headers})).unwrap();
           if (res.success) {
             onHide();
           }
@@ -127,7 +132,7 @@ const TournamentModal = (props: TProps) => {
           };
           console.log(file, "file");
           const res = await dispatch(
-            updateTournament({ payload, id: data?.tnid as string })
+            updateTournament({ payload, id: data?.tnid as string,headers })
           ).unwrap();
           if (res.success) {
             onHide();

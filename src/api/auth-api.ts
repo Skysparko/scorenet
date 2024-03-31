@@ -18,7 +18,8 @@ class AuthApiService {
 //    * @returns Token
    */
   public async register(
-    payload: IRegisterUserPayload
+    payload: IRegisterUserPayload,
+    headers:any
   ): Promise<IResponse<IUser>> {
     let fd = new FormData();
 
@@ -26,7 +27,7 @@ class AuthApiService {
       fd.append(key, (payload as any)[key]);
     }
     console.log("fd", fd);
-    return BaseApi._post(this.url("register"), fd);
+    return BaseApi._post(this.url("register"), fd,headers);
   }
 
   /**
@@ -34,8 +35,9 @@ class AuthApiService {
    * @param ILoginUserPayload
 //    * @returns Token
    */
-  public async login(payload: ILoginUserPayload): Promise<IResponse<IUser>> {
-    return BaseApi._post(this.url("login"), payload);
+  public async login(payload: ILoginUserPayload,
+    headers:any): Promise<IResponse<IUser>> {
+    return BaseApi._post(this.url("login"), payload,headers);
   }
 
   /**
@@ -44,9 +46,10 @@ class AuthApiService {
 //    * @returns Token
    */
   public async otpVerify(
-    payload: IOtpVerifyPayload
+    payload: IOtpVerifyPayload,
+    headers:any
   ): Promise<IResponse<IUser>> {
-    return BaseApi._post(this.url("otp-verify"), payload);
+    return BaseApi._post(this.url("otp-verify"), payload,headers);
   }
 
   /**
@@ -55,9 +58,10 @@ class AuthApiService {
 //    * @returns Token
    */
   public async updatePassword(
-    payload: IUpdatePasswordPayload
+    payload: IUpdatePasswordPayload,
+    headers:any
   ): Promise<IResponse<IUser>> {
-    return BaseApi._patch(this.url("update-password"), payload);
+    return BaseApi._patch(this.url("update-password"), payload,headers);
   }
 
   /**
@@ -66,14 +70,15 @@ class AuthApiService {
 //    * @returns Token
    */
   public async updateUser(
-    payload: IUpdateUserPayload
+    payload: IUpdateUserPayload,
+    headers:any
   ): Promise<IResponse<IUser>> {
     let fd = new FormData();
 
     for (let key in payload as IRegisterUserPayload) {
       fd.append(key, (payload as any)[key]);
     }
-    return BaseApi._put(this.url("update"), fd);
+    return BaseApi._put(this.url("update"), fd,headers);
   }
 }
 const AuthApi = new AuthApiService();

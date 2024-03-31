@@ -19,19 +19,25 @@ const initialState: TState = {
   loading: false,
 };
 
-const fetchPlayers = createAsyncThunk("fetch/players", async (_, thunkApi) => {
-  try {
-    return thunkApi.fulfillWithValue(await PlayerApi.getAll());
-  } catch (error) {
-    return thunkApi.rejectWithValue(error);
+const fetchPlayers = createAsyncThunk(
+  "fetch/players",
+  async (headers: any, thunkApi) => {
+    try {
+      return thunkApi.fulfillWithValue(await PlayerApi.getAll(headers));
+    } catch (error) {
+      return thunkApi.rejectWithValue(error);
+    }
   }
-});
+);
 
 const createPlayer = createAsyncThunk(
   "player/create",
-  async (payload: ICreatePlayerPayload, thunkApi) => {
+  async (
+    { payload, headers }: { payload: ICreatePlayerPayload; headers: any },
+    thunkApi
+  ) => {
     try {
-      const player = await PlayerApi.create(payload);
+      const player = await PlayerApi.create(payload, headers);
       return thunkApi.fulfillWithValue(player);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -42,11 +48,15 @@ const createPlayer = createAsyncThunk(
 const updatePlayer = createAsyncThunk(
   "player/update",
   async (
-    { payload, id }: { payload: IUpdatePlayerPayload; id: string },
+    {
+      payload,
+      id,
+      headers,
+    }: { payload: IUpdatePlayerPayload; id: string; headers: any },
     thunkApi
   ) => {
     try {
-      const player = await PlayerApi.update(payload, id);
+      const player = await PlayerApi.update(payload, id, headers);
       return thunkApi.fulfillWithValue(player);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -56,9 +66,9 @@ const updatePlayer = createAsyncThunk(
 
 const deletePlayer = createAsyncThunk(
   "player/delete",
-  async (id: string, thunkApi) => {
+  async ({ id, headers }: { id: string; headers: any }, thunkApi) => {
     try {
-      return thunkApi.fulfillWithValue(await PlayerApi.delete(id));
+      return thunkApi.fulfillWithValue(await PlayerApi.delete(id, headers));
     } catch (error) {
       return thunkApi.rejectWithValue(error);
     }
@@ -115,7 +125,8 @@ const playerSlice = createSlice({
       state.loading = false;
       console.log("action", action.meta.arg);
       state.players =
-        state.players?.filter((player) => player?.pid !== action.meta.arg) ?? null;
+        state.players?.filter((player) => player?.pid !== action.meta.arg.id) ??
+        null;
     });
     builder.addCase(deletePlayer.rejected, (state, action) => {
       state.loading = false;

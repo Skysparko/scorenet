@@ -28,6 +28,8 @@ import { IPlayer } from "@/types/player.type";
 import PlayerModal from "../modals/player-modal";
 import { deletePlayer } from "@/store/slice/player-slice";
 import { useAppDispatch } from "../../store/hooks";
+import { tokens as TK } from "@/store/slice/auth-slice";
+import { useSelector } from "react-redux";
 
 type TProps = {
   columns: Array<{ name: string; uid: string; sortable?: boolean }>;
@@ -42,6 +44,10 @@ function capitalize(str: string) {
 export default function PlayerList(props: TProps) {
   const { data, columns, INITIAL_VISIBLE_COLUMNS } = props;
   const dispatch = useAppDispatch();
+  const token = useSelector(TK);
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
   const [type, setType] = useState<"ADD" | "EDIT" | "VIEW">("ADD");
   const [showPlayerModal, setShowPlayerModal] = useState(false);
   const [player, setPlayer] = useState<IPlayer>();
@@ -81,81 +87,88 @@ export default function PlayerList(props: TProps) {
     return data.slice(start, end);
   }, [page, data, rowsPerPage]);
 
-  const renderCell = React.useCallback((tour: IPlayer, columnKey: React.Key) => {
-    const cellValue = tour[columnKey as keyof IPlayer];
-    console.log(cellValue, tour);
-    switch (columnKey) {
-      // case "name":
-      //   return (
-      //     <User
-      //       // avatarProps={{ radius: "lg", src: user.image }}
-      //       description={user.}
-      //       name={cellValue}
-      //     >
-      //       {user.email}
-      //     </User>
-      //   );
-      // case "role":
-      //   return (
-      //     <div className="flex flex-col">
-      //       <p className="text-bold text-small capitalize">{cellValue}</p>
-      //       <p className="text-bold text-tiny capitalize text-default-400">
-      //         {user.player}
-      //       </p>
-      //     </div>
-      //   );
-      // case "status":
-      //   return (
-      //     <Chip
-      //       className="capitalize"
-      //       color={statusColorMap[user.status]}
-      //       size="sm"
-      //       variant="flat"
-      //     >
-      //       {cellValue}
-      //     </Chip>
-      //   );
-      case "actions":
-        return (
-          <div className="relative flex justify-end items-center gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem
-                  onClick={() => {
-                    setType("VIEW");
-                    setPlayer(tour);
-                    setShowPlayerModal(true);
-                  }}
-                >
-                  View
-                </DropdownItem>
-                <DropdownItem
-                  onClick={() => {
-                    setType("EDIT");
-                    setPlayer(tour);
-                    setShowPlayerModal(true);
-                  }}
-                >
-                  Edit
-                </DropdownItem>
-                <DropdownItem
-                  onClick={() => dispatch(deletePlayer(tour.pid as string))}
-                >
-                  Delete
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+  const renderCell = React.useCallback(
+    (tour: IPlayer, columnKey: React.Key) => {
+      const cellValue = tour[columnKey as keyof IPlayer];
+      console.log(cellValue, tour);
+      switch (columnKey) {
+        // case "name":
+        //   return (
+        //     <User
+        //       // avatarProps={{ radius: "lg", src: user.image }}
+        //       description={user.}
+        //       name={cellValue}
+        //     >
+        //       {user.email}
+        //     </User>
+        //   );
+        // case "role":
+        //   return (
+        //     <div className="flex flex-col">
+        //       <p className="text-bold text-small capitalize">{cellValue}</p>
+        //       <p className="text-bold text-tiny capitalize text-default-400">
+        //         {user.player}
+        //       </p>
+        //     </div>
+        //   );
+        // case "status":
+        //   return (
+        //     <Chip
+        //       className="capitalize"
+        //       color={statusColorMap[user.status]}
+        //       size="sm"
+        //       variant="flat"
+        //     >
+        //       {cellValue}
+        //     </Chip>
+        //   );
+        case "actions":
+          return (
+            <div className="relative flex justify-end items-center gap-2">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly size="sm" variant="light">
+                    <VerticalDotsIcon className="text-default-300" />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu>
+                  <DropdownItem
+                    onClick={() => {
+                      setType("VIEW");
+                      setPlayer(tour);
+                      setShowPlayerModal(true);
+                    }}
+                  >
+                    View
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => {
+                      setType("EDIT");
+                      setPlayer(tour);
+                      setShowPlayerModal(true);
+                    }}
+                  >
+                    Edit
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() =>
+                      dispatch(
+                        deletePlayer({ id: tour.pid as string, headers })
+                      )
+                    }
+                  >
+                    Delete
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    []
+  );
 
   const onNextPage = React.useCallback(() => {
     if (page < pages) {

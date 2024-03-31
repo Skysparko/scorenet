@@ -33,6 +33,8 @@ import {
   fetchTournaments,
   tournaments as TD,
 } from "@/store/slice/tournament-slice";
+import { tokens as TK } from "@/store/slice/auth-slice";
+
 
 type TProps = {
   show: boolean;
@@ -88,9 +90,13 @@ const TeamModal = (props: TProps) => {
     onSubmit: handleSubmit,
   });
   const dispatch = useAppDispatch();
+  const token = useSelector(TK)
+  const headers = {
+    Authorization:  `Bearer ${token}`
+  }
   const fetchTournamentData = async () => {
     try {
-      const data = await dispatch(fetchTournaments()).unwrap();
+      const data = await dispatch(fetchTournaments(headers)).unwrap();
     } catch (error) {}
   };
   useEffect(() => {
@@ -105,7 +111,7 @@ const TeamModal = (props: TProps) => {
             image: file,
           };
           console.log(file, "file");
-          const res = await dispatch(createTeam(payload)).unwrap();
+          const res = await dispatch(createTeam({payload,headers})).unwrap();
           if (res.success) {
             onHide();
           }
@@ -118,7 +124,7 @@ const TeamModal = (props: TProps) => {
           };
           console.log(file, "file");
           const res = await dispatch(
-            updateTeam({ payload, id: data?.tmid as string })
+            updateTeam({ payload, id: data?.tmid as string,headers })
           ).unwrap();
           if (res.success) {
             onHide();

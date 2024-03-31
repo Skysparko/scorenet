@@ -28,6 +28,7 @@ import { getPhoto } from "@/configs/api-config";
 import ProfileModal from "../modals/profile-modal";
 import Link from "next/link";
 
+
 export default function CustomNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -36,7 +37,6 @@ export default function CustomNavbar() {
   const user = useSelector(UD);
   const imagePath = useSelector(IP);
   const dispatch = useAppDispatch();
-
   const menuItems = [
     { id: "my-profile", label: "My Profile" },
     { id: "team", label: "Team" },
@@ -111,7 +111,7 @@ export default function CustomNavbar() {
                 <DropdownItem
                   key="logout"
                   color="danger"
-                  onClick={() => dispatch(logOut())}
+                  onClick={() => {dispatch(logOut()); location.reload()}}
                 >
                   Log Out
                 </DropdownItem>
@@ -138,6 +138,7 @@ export default function CustomNavbar() {
                 switch (item.id) {
                   case "logout":
                     dispatch(logOut());
+                    location.reload()
                     break;
                   case "my-profile":
                     setShowProfileModal(true);

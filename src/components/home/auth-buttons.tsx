@@ -15,7 +15,7 @@ const AuthButtons = () => {
       {token ? (
         <>
           <h1>you are logged IN</h1>
-          <Button onClick={() => dispatch(logOut())}>Logout</Button>
+          <Button onClick={() => {dispatch(logOut()); location.reload()}}>Logout</Button>
         </>
       ) : (
         <>

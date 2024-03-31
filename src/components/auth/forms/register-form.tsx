@@ -2,6 +2,7 @@
 import ImageCropper from "@/components/cropper/image-cropper";
 import { useAppDispatch } from "@/store/hooks";
 import { register, loading as LD } from "@/store/slice/auth-slice";
+import { tokens as TK } from "@/store/slice/auth-slice";
 import { IRegisterUserPayload } from "@/types/auth.type";
 import { Button, Input } from "@nextui-org/react";
 import { useFormik } from "formik";
@@ -34,6 +35,7 @@ const RegisterForm = () => {
   const [file,setFile] = useState<File|null>(null)
   const [showImageError, setShowImageError] = useState(false);
   const loading = useSelector(LD);
+  const token = useSelector(TK)
   const formik = useFormik({
     initialValues: { ...initialValues, confirmPassword: "" },
     validationSchema,
@@ -47,7 +49,10 @@ const RegisterForm = () => {
           ...formik.values,
           image: file,
         };
-        const res = await dispatch(register(payload)).unwrap();
+        const headers = {
+          Authorization:  `Bearer ${token}`
+        }
+        const res = await dispatch(register({payload,headers})).unwrap();
         if (res.success) {
           if (res.data.bearer_token) {
             router.push("/");
