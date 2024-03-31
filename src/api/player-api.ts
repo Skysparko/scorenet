@@ -1,7 +1,10 @@
-
 import { IResponse } from "@/types/common.type";
 import * as BaseApi from "./base-api";
-import { ICreatePlayerPayload, IPlayer, IUpdatePlayerPayload } from "@/types/player.type";
+import {
+  ICreatePlayerPayload,
+  IPlayer,
+  IUpdatePlayerPayload,
+} from "@/types/player.type";
 class PlayerApiService {
   private url = (api: string) => `players/${api}`;
   /**
@@ -9,9 +12,16 @@ class PlayerApiService {
    * @param Player
    * @returns Player
    */
-  public async create(payload: ICreatePlayerPayload): Promise<IResponse<IPlayer>> {
-    return BaseApi._post(this.url("register"), payload);
-  } 
+  public async create(
+    payload: ICreatePlayerPayload
+  ): Promise<IResponse<IPlayer>> {
+    let fd = new FormData();
+
+    for (let key in payload as ICreatePlayerPayload) {
+      fd.append(key, (payload as any)[key]);
+    }
+    return BaseApi._post(this.url("create"), fd);
+  }
 
   /**
    * Get all Player
@@ -26,7 +36,7 @@ class PlayerApiService {
    * @params id
    * @returns Player
    */
-  public async get(id:string): Promise<IResponse<IPlayer>> {
+  public async get(id: string): Promise<IResponse<IPlayer>> {
     return BaseApi._get(this.url(id));
   }
 
@@ -35,8 +45,16 @@ class PlayerApiService {
    * @param Player
    * @returns Player
    */
-  public async update(payload: IUpdatePlayerPayload,id:string): Promise<IResponse<IPlayer>>{
-    return BaseApi._patch(this.url(`${id}`), payload);
+  public async update(
+    payload: IUpdatePlayerPayload,
+    id: string
+  ): Promise<IResponse<IPlayer>> {
+    let fd = new FormData();
+
+    for (let key in payload as ICreatePlayerPayload) {
+      fd.append(key, (payload as any)[key]);
+    }
+    return BaseApi._put(this.url(`${id}`), fd);
   }
 
   /**

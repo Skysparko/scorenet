@@ -1,21 +1,21 @@
-export interface IPlayer{
-    tmid?:string
-    sport: string;
-    title: string;
-    season: string;
-    from_date: Date;
-    to_date: Date;
-    end_date: Date;
-    type: string;
-    win_point: string;
-    image: File | null;
+export interface IPlayer {
+  pid?: string;
+  tnid: string;
+  name: string;
+  image: string;
+  sname: string;
+  mobile: string;
+  status: string;
 }
 
-export interface ICreatePlayerPayload extends IPlayer {
-
+export interface ICreatePlayerPayload {
+  pid?: string;
+  tnid: string;
+  name: string;
+  image: File | null;
+  sname: string;
+  mobile: string;
+  status: string;
 }
 
-export interface IUpdatePlayerPayload extends IPlayer {
-
-}
-
+export interface IUpdatePlayerPayload extends ICreatePlayerPayload {}

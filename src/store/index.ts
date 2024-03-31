@@ -3,12 +3,13 @@ import { persistStore } from "redux-persist";
 import authSlice from "@/store/slice/auth-slice";
 import tournamentSlice from "@/store/slice/tournament-slice";
 import teamSlice from "./slice/team-slice";
+import playerSlice from "./slice/player-slice";
 
 const rootReducer = combineReducers({
   auth: authSlice,
   tournament: tournamentSlice,
-  team:teamSlice,
-
+  team: teamSlice,
+  player: playerSlice,
 });
 export const store = configureStore({
   reducer: rootReducer,

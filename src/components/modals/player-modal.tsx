@@ -23,40 +23,33 @@ import NextImage from "next/image";
 import { getPhoto } from "../../configs/api-config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { createTeam, updateTeam } from "@/store/slice/team-slice";
-import {
-  ICreateTeamPayload,
-  ITeam,
-  IUpdateTeamPayload,
-} from "@/types/team.type";
+import { createPlayer, updatePlayer } from "@/store/slice/player-slice";
 import {
   fetchTournaments,
   tournaments as TD,
-} from "@/store/slice/tournament-slice";
+} from "../../store/slice/tournament-slice";
+import {
+  ICreatePlayerPayload,
+  IPlayer,
+  IUpdatePlayerPayload,
+} from "@/types/player.type";
 
 type TProps = {
   show: boolean;
   onHide: () => void;
   type: "ADD" | "VIEW" | "EDIT";
-  data?: ITeam;
+  data?: IPlayer;
 };
 
 const initialValues = {
   tnid: "",
   name: "",
-  s_name: "",
-  group: "",
-  tmatch: "",
-  pmatch: "",
-  win: "",
-  lose: "",
-  tie: "",
-  rating: "",
-  point: "",
-  color: "",
+  sname: "",
+  mobile: "",
+  status: "",
 };
 
-const TeamModal = (props: TProps) => {
+const PlayerModal = (props: TProps) => {
   const { show, onHide, type, data } = props;
   const [operation, setOperation] = useState("Add");
   const user = useSelector(UD);
@@ -66,20 +59,13 @@ const TeamModal = (props: TProps) => {
   const loading = useSelector(LD);
   const imagePath = useSelector(IP);
   const tournaments = useSelector(TD);
-
+  const statusType = ["Active", "Inactive"];
   const validationSchema = object().shape({
     tnid: string().required("Required"),
     name: string().required("Required"),
-    s_name: string().required("Required"),
-    group: string().required("Required"),
-    tmatch: string().required("Required"),
-    pmatch: string().required("Required"),
-    win: string().required("Required"),
-    lose: string().required("Required"),
-    tie: string().required("Required"),
-    rating: string().required("Required"),
-    point: string().required("Required"),
-    color: string().required("Required"),
+    sname: string().required("Required"),
+    mobile: string().required("Required"),
+    status: string().required("Required"),
   });
 
   const formik = useFormik({
@@ -88,37 +74,29 @@ const TeamModal = (props: TProps) => {
     onSubmit: handleSubmit,
   });
   const dispatch = useAppDispatch();
-  const fetchTournamentData = async () => {
-    try {
-      const data = await dispatch(fetchTournaments()).unwrap();
-    } catch (error) {}
-  };
-  useEffect(() => {
-    fetchTournamentData();
-  }, []);
   async function handleSubmit() {
     try {
       if (type === "ADD") {
         if (croppedImage) {
-          const payload: ICreateTeamPayload = {
+          const payload: ICreatePlayerPayload = {
             ...formik.values,
             image: file,
           };
           console.log(file, "file");
-          const res = await dispatch(createTeam(payload)).unwrap();
+          const res = await dispatch(createPlayer(payload)).unwrap();
           if (res.success) {
             onHide();
           }
         }
       } else {
         if (croppedImage) {
-          const payload: IUpdateTeamPayload = {
+          const payload: IUpdatePlayerPayload = {
             ...formik.values,
             image: file,
           };
           console.log(file, "file");
           const res = await dispatch(
-            updateTeam({ payload, id: data?.tmid as string })
+            updatePlayer({ payload, id: data?.pid as string })
           ).unwrap();
           if (res.success) {
             onHide();
@@ -129,7 +107,15 @@ const TeamModal = (props: TProps) => {
       console.log("Error", error);
     }
   }
-  console.log("Team", croppedImage, data);
+
+  const fetchTournamentData = async () => {
+    try {
+      const data = await dispatch(fetchTournaments()).unwrap();
+    } catch (error) {}
+  };
+  useEffect(() => {
+    fetchTournamentData();
+  }, []);
   useEffect(() => {
     switch (type) {
       case "ADD":
@@ -140,41 +126,26 @@ const TeamModal = (props: TProps) => {
       case "EDIT":
         if (data) {
           formik.setValues({
-            tnid: data?.tnid,
-            name: data?.name,
-            s_name: data?.s_name,
-            group: data?.group,
-            tmatch: data?.tmatch,
-            pmatch: data?.pmatch,
-            win: data?.win,
-            lose: data?.lose,
-            tie: data?.tie,
-            rating: data?.rating,
-            point: data?.point,
-            color: data?.color,
+            tnid: data.tnid,
+            name: data.name,
+            sname: data.sname,
+            mobile: data.mobile,
+            status: data.status,
           });
-          setCroppedImage(getPhoto(imagePath as string, data?.logo as string));
+          setCroppedImage(getPhoto(imagePath as string, data?.image as string));
         }
         setOperation("Edit");
         break;
       case "VIEW":
         if (data) {
           formik.setValues({
-            tnid: data?.tnid,
-            name: data?.name,
-            s_name: data?.s_name,
-            group: data?.group,
-            tmatch: data?.tmatch,
-            pmatch: data?.pmatch,
-            win: data?.win,
-            lose: data?.lose,
-            tie: data?.tie,
-            rating: data?.rating,
-            point: data?.point,
-            color: data?.color,
+            tnid: data.tnid,
+            name: data.name,
+            sname: data.sname,
+            mobile: data.mobile,
+            status: data.status,
           });
-          console.log("view", data?.logo);
-          setCroppedImage(getPhoto(imagePath as string, data?.logo as string));
+          setCroppedImage(getPhoto(imagePath as string, data?.image as string));
         }
         setOperation("My");
         break;
@@ -190,14 +161,12 @@ const TeamModal = (props: TProps) => {
       isOpen={show}
       onClose={() => {
         onHide();
-        // setCroppedImage("")
-        // setIsEditable(false);
       }}
       size="2xl"
     >
       <ModalContent>
         <ModalHeader>
-          <h1>{operation} Team</h1>
+          <h1>{operation} Player</h1>
         </ModalHeader>
         <form
           onSubmit={(e) => {
@@ -305,19 +274,19 @@ const TeamModal = (props: TProps) => {
                 <div>
                   <Input
                     type="text"
-                    id="s_name"
-                    name="s_name"
+                    id="sname"
+                    name="sname"
                     label="S Name"
-                    value={formik.values.s_name}
+                    value={formik.values.sname}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     isInvalid={
-                      (formik.errors.s_name && formik.touched.s_name) as boolean
+                      (formik.errors.sname && formik.touched.sname) as boolean
                     }
                     errorMessage={
-                      formik.errors.s_name &&
-                      formik.touched.s_name &&
-                      formik.errors.s_name
+                      formik.errors.sname &&
+                      formik.touched.sname &&
+                      formik.errors.sname
                     }
                     disabled={type === "VIEW"}
                     // disabled={!isEditable}
@@ -326,192 +295,49 @@ const TeamModal = (props: TProps) => {
 
                 <div>
                   <Input
-                    type="text"
-                    id="group"
-                    name="group"
-                    label="Group"
-                    value={formik.values.group}
+                    type="number"
+                    id="mobile"
+                    name="mobile"
+                    label="Mobile"
+                    value={formik.values.mobile}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     isInvalid={
-                      (formik.errors.group && formik.touched.group) as boolean
+                      (formik.errors.mobile && formik.touched.mobile) as boolean
                     }
                     errorMessage={
-                      formik.errors.group &&
-                      formik.touched.group &&
-                      formik.errors.group
+                      formik.errors.mobile &&
+                      formik.touched.mobile &&
+                      formik.errors.mobile
                     }
                     disabled={type === "VIEW"}
                     // disabled={!isEditable}
                   />
                 </div>
                 <div>
-                  <Input
-                    type="text"
-                    id="tmatch"
-                    name="tmatch"
-                    label="T Match"
-                    value={formik.values.tmatch}
+                  <Select
+                    label="Select a status"
+                    className="max-w-xs"
+                    selectedKeys={[formik.values.status]}
+                    name="status"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     isInvalid={
-                      (formik.errors.tmatch && formik.touched.tmatch) as boolean
+                      (formik.errors.status && formik.touched.status) as boolean
                     }
                     errorMessage={
-                      formik.errors.tmatch &&
-                      formik.touched.tmatch &&
-                      formik.errors.tmatch
+                      formik.errors.status &&
+                      formik.touched.status &&
+                      formik.errors.status
                     }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    id="pmatch"
-                    name="pmatch"
-                    label="P Match"
-                    value={formik.values.pmatch}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={
-                      (formik.errors.pmatch && formik.touched.pmatch) as boolean
-                    }
-                    errorMessage={
-                      formik.errors.pmatch &&
-                      formik.touched.pmatch &&
-                      formik.errors.pmatch
-                    }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    id="win"
-                    name="win"
-                    label="Win"
-                    value={formik.values.win}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={
-                      (formik.errors.win && formik.touched.win) as boolean
-                    }
-                    errorMessage={
-                      formik.errors.win &&
-                      formik.touched.win &&
-                      formik.errors.win
-                    }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    id="lose"
-                    name="lose"
-                    label="Lose"
-                    value={formik.values.lose}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={
-                      (formik.errors.lose && formik.touched.lose) as boolean
-                    }
-                    errorMessage={
-                      formik.errors.lose &&
-                      formik.touched.lose &&
-                      formik.errors.lose
-                    }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    id="tie"
-                    name="tie"
-                    label="Tie"
-                    value={formik.values.tie}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={
-                      (formik.errors.tie && formik.touched.tie) as boolean
-                    }
-                    errorMessage={
-                      formik.errors.tie &&
-                      formik.touched.tie &&
-                      formik.errors.tie
-                    }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    id="rating"
-                    name="rating"
-                    label="Rating"
-                    value={formik.values.rating}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={
-                      (formik.errors.rating && formik.touched.rating) as boolean
-                    }
-                    errorMessage={
-                      formik.errors.rating &&
-                      formik.touched.rating &&
-                      formik.errors.rating
-                    }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    id="point"
-                    name="point"
-                    label="Point"
-                    value={formik.values.point}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={
-                      (formik.errors.point && formik.touched.point) as boolean
-                    }
-                    errorMessage={
-                      formik.errors.point &&
-                      formik.touched.point &&
-                      formik.errors.point
-                    }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="text"
-                    id="color"
-                    name="color"
-                    label="Color"
-                    value={formik.values.color}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={
-                      (formik.errors.color && formik.touched.color) as boolean
-                    }
-                    errorMessage={
-                      formik.errors.color &&
-                      formik.touched.color &&
-                      formik.errors.color
-                    }
-                    disabled={type === "VIEW"}
-                    // disabled={!isEditable}
-                  />
+                    isDisabled={type === "VIEW"}
+                  >
+                    {statusType.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
+                  </Select>
                 </div>
               </div>
             </>
@@ -552,4 +378,4 @@ const TeamModal = (props: TProps) => {
   );
 };
 
-export default TeamModal;
+export default PlayerModal;
