@@ -1,5 +1,6 @@
 export interface ITeam{
-    tnid?:string,
+    tmid?:string,
+    tnid:string,
     name:string,
     s_name:string,
     group:string,
@@ -11,14 +12,26 @@ export interface ITeam{
     rating:string,
     point:string,
     color:string
-    logo: File | null;
+    logo:string
 }
 
-export interface ICreateTeamPayload extends ITeam {
-
+export interface ICreateTeamPayload  {
+    tnid:string,
+    name:string,
+    s_name:string,
+    group:string,
+    tmatch:string,
+    pmatch:string,
+    win:string,
+    lose:string,
+    tie:string,
+    rating:string,
+    point:string,
+    color:string
+    image: File|null;
 }
 
-export interface IUpdateTeamPayload extends ITeam {
+export interface IUpdateTeamPayload extends ICreateTeamPayload {
 
 }
 

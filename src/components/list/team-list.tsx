@@ -24,29 +24,28 @@ import { PlusIcon } from "./PlusIcon";
 import { VerticalDotsIcon } from "./VerticalDotsIcon";
 import { ChevronDownIcon } from "./ChevronDownIcon";
 import { SearchIcon } from "./SearchIcon";
-import { ITournament } from "@/types/tournament.type";
-import TournamentModal from "../modals/tournament-modal";
-import { deleteTournament } from "@/store/slice/tournament-slice";
+import { ITeam } from "@/types/team.type";
+import TeamModal from "../modals/team-modal";
+import { deleteTeam } from "@/store/slice/team-slice";
 import { useAppDispatch } from "../../store/hooks";
 
 type TProps = {
   columns: Array<{ name: string; uid: string; sortable?: boolean }>;
-  data: Array<ITournament>;
+  data: Array<ITeam>;
   INITIAL_VISIBLE_COLUMNS: Array<string>;
 };
-
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export default function TournamentList(props: TProps) {
+export default function TeamList(props: TProps) {
   const { data, columns, INITIAL_VISIBLE_COLUMNS } = props;
   const dispatch = useAppDispatch();
   const [type, setType] = useState<"ADD" | "EDIT" | "VIEW">("ADD");
-  const [showTournamentModal, setShowTournamentModal] = useState(false);
-  const [tournament,setTournament] = useState<ITournament>()
-  type TTournament = (typeof data)[0];
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [team, setTeam] = useState<ITeam>();
+  type TTeam = (typeof data)[0];
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<Selection>(
     new Set([])
@@ -82,8 +81,8 @@ export default function TournamentList(props: TProps) {
     return data.slice(start, end);
   }, [page, data, rowsPerPage]);
 
-  const renderCell = React.useCallback((tour: TTournament, columnKey: React.Key) => {
-    const cellValue = tour[columnKey as keyof TTournament];
+  const renderCell = React.useCallback((tour: ITeam, columnKey: React.Key) => {
+    const cellValue = tour[columnKey as keyof ITeam];
     console.log(cellValue, tour);
     switch (columnKey) {
       // case "name":
@@ -129,8 +128,8 @@ export default function TournamentList(props: TProps) {
                 <DropdownItem
                   onClick={() => {
                     setType("VIEW");
-                    setTournament(tour)
-                    setShowTournamentModal(true);
+                    setTeam(tour);
+                    setShowTeamModal(true);
                   }}
                 >
                   View
@@ -138,16 +137,14 @@ export default function TournamentList(props: TProps) {
                 <DropdownItem
                   onClick={() => {
                     setType("EDIT");
-                    setTournament(tour)
-                    setShowTournamentModal(true);
+                    setTeam(tour);
+                    setShowTeamModal(true);
                   }}
                 >
                   Edit
                 </DropdownItem>
                 <DropdownItem
-                  onClick={() =>
-                    dispatch(deleteTournament(tour.tnid as string))
-                  }
+                  onClick={() => dispatch(deleteTeam(tour.tmid as string))}
                 >
                   Delete
                 </DropdownItem>
@@ -237,7 +234,7 @@ export default function TournamentList(props: TProps) {
               endContent={<PlusIcon />}
               onClick={() => {
                 setType("ADD");
-                setShowTournamentModal(true);
+                setShowTeamModal(true);
               }}
             >
               Add
@@ -246,7 +243,7 @@ export default function TournamentList(props: TProps) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {data.length} tournaments
+            Total {data.length} teams
           </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
@@ -311,17 +308,17 @@ export default function TournamentList(props: TProps) {
     );
   }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
-  const onTournamentModalHide = () => {
-    setShowTournamentModal(false);
+  const onTeamModalHide = () => {
+    setShowTeamModal(false);
   };
 
   return (
     <div className="p-10">
-      <TournamentModal
-        show={showTournamentModal}
-        onHide={onTournamentModalHide}
+      <TeamModal
+        show={showTeamModal}
+        onHide={onTeamModalHide}
         type={type}
-        data={tournament}
+        data={team}
       />
       <Table
         aria-label="Example table with custom cells, pagination and sorting"
@@ -347,9 +344,9 @@ export default function TournamentList(props: TProps) {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody emptyContent={"No tournaments found"} items={items}>
+        <TableBody emptyContent={"No teams found"} items={items}>
           {(item) => (
-            <TableRow key={item.tnid}>
+            <TableRow key={item.tmid}>
               {(columnKey) => (
                 <TableCell>{renderCell(item, columnKey) as string}</TableCell>
               )}

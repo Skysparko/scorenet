@@ -97,8 +97,8 @@ const TournamentModal = (props: TProps) => {
         if (croppedImage) {
           const payload: ICreateTournamentPayload = {
             sport: formik.values.sport,
-            title: formik.values.sport,
-            season: formik.values.sport,
+            title: formik.values.title,
+            season: formik.values.season,
             from_date: formik.values.fromDate,
             to_date: formik.values.toDate,
             end_date: formik.values.endDate,
@@ -116,8 +116,8 @@ const TournamentModal = (props: TProps) => {
         if (croppedImage) {
           const payload: IUpdateTournamentPayload = {
             sport: formik.values.sport,
-            title: formik.values.sport,
-            season: formik.values.sport,
+            title: formik.values.title,
+            season: formik.values.season,
             from_date: formik.values.fromDate,
             to_date: formik.values.toDate,
             end_date: formik.values.endDate,
