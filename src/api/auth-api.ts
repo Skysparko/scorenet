@@ -57,7 +57,7 @@ class AuthApiService {
   public async updatePassword(
     payload: IUpdatePasswordPayload
   ): Promise<IResponse<IUser>> {
-    return BaseApi._post(this.url("update-password"), payload);
+    return BaseApi._patch(this.url("update-password"), payload);
   }
 
   /**
@@ -68,7 +68,12 @@ class AuthApiService {
   public async updateUser(
     payload: IUpdateUserPayload
   ): Promise<IResponse<IUser>> {
-    return BaseApi._put(this.url("update"), payload);
+    let fd = new FormData();
+
+    for (let key in payload as IRegisterUserPayload) {
+      fd.append(key, (payload as any)[key]);
+    }
+    return BaseApi._put(this.url("update"), fd);
   }
 }
 const AuthApi = new AuthApiService();

@@ -10,6 +10,7 @@ import {
   ILoginUserPayload,
   IOtpVerifyPayload,
   IRegisterUserPayload,
+  IUpdatePasswordPayload,
   IUpdateUserPayload,
 } from "@/types/auth.type";
 
@@ -74,6 +75,18 @@ const updateUser = createAsyncThunk(
   async (payload: IUpdateUserPayload, thunkApi) => {
     try {
       const user = await AuthApi.updateUser(payload);
+      return thunkApi.fulfillWithValue(user);
+    } catch (error) {
+      throw thunkApi.rejectWithValue(error);
+    }
+  }
+);
+
+const updateUserPassword = createAsyncThunk(
+  "auth/update-password",
+  async (payload: IUpdatePasswordPayload, thunkApi) => {
+    try {
+      const user = await AuthApi.updatePassword(payload);
       return thunkApi.fulfillWithValue(user);
     } catch (error) {
       throw thunkApi.rejectWithValue(error);
@@ -165,7 +178,7 @@ const authSlice = createSlice({
   },
 });
 
-export { login, register, otpVerify,updateUser };
+export { login, register, otpVerify,updateUser,updateUserPassword };
 export const tokens = (state: RootState) => state.auth.user.token;
 export const imagePath = (state: RootState) => state.auth.user.path;
 export const user = (state: RootState) => state.auth.user.detail;

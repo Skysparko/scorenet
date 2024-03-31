@@ -1,5 +1,9 @@
 import { useAppDispatch } from "@/store/hooks";
-import { user as UD, updateUser } from "@/store/slice/auth-slice";
+import {
+  user as UD,
+  updateUser,
+  updateUserPassword,
+} from "@/store/slice/auth-slice";
 import {
   Button,
   Input,
@@ -14,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { object, ref, string } from "yup";
 import { loading as LD, imagePath as IP } from "@/store/slice/auth-slice";
-import { IUpdateUserPayload } from "@/types/auth.type";
+import { IUpdatePasswordPayload, IUpdateUserPayload } from "@/types/auth.type";
 import ImageCropper from "../cropper/image-cropper";
 import Image from "next/image";
 import NextImage from "next/image";
@@ -59,7 +63,7 @@ const ProfileModal = (props: TProps) => {
       newPassword: string().required("Required"),
       confirmNewPassword: string()
         .required("Required")
-        .oneOf([ref("password")], "Passwords must match"),
+        .oneOf([ref("newPassword")], "Passwords must match"),
     });
 
     if (isUpdatePassword) {
@@ -80,21 +84,25 @@ const ProfileModal = (props: TProps) => {
           const payload: IUpdateUserPayload = {
             ...formik.values,
             image: file,
+          };
+          const res = await dispatch(updateUser(payload)).unwrap();
+          if (res.success) {
+            onHide();
+            setIsEditable(false);
           }
-          await dispatch(updateUser(payload)).unwrap();
-          // if (res.success) {
-          //   if (res.data.bearer_token) {
-          //     router.push("/");
-          //   } else {
-          //     router.push("/verify-otp");
-          //   }
-          // }
         }
-
       } else {
-
+        const payload: IUpdatePasswordPayload = {
+          old_password: formik.values.oldPassword,
+          new_password: formik.values.newPassword,
+        };
+        const res = await dispatch(updateUserPassword(payload)).unwrap();
+        if (res.success) {
+          onHide();
+          setIsEditable(false);
+        }
       }
-  } catch (error) {
+    } catch (error) {
       console.log("Error", error);
     }
   }
@@ -104,7 +112,7 @@ const ProfileModal = (props: TProps) => {
       formik.setFieldValue("name", user?.name);
       formik.setFieldValue("email", user?.email);
       formik.setFieldValue("mobile_no", user?.mobile_no);
-      setCroppedImage(getPhoto(imagePath as string, user?.image as string))
+      setCroppedImage(getPhoto(imagePath as string, user?.image as string));
     }
   }, [isEditable, show]);
   return (
@@ -114,7 +122,10 @@ const ProfileModal = (props: TProps) => {
       isKeyboardDismissDisabled={true}
       isDismissable={false}
       isOpen={show}
-      onClose={()=>{onHide();setIsEditable(false)}}
+      onClose={() => {
+        onHide();
+        setIsEditable(false);
+      }}
       size="2xl"
     >
       <ModalContent>
@@ -339,7 +350,13 @@ const ProfileModal = (props: TProps) => {
                   </svg>
                 </Button>
               )}
-              <Button color="danger" onClick={()=>{onHide();setIsEditable(false)}}>
+              <Button
+                color="danger"
+                onClick={() => {
+                  onHide();
+                  setIsEditable(false);
+                }}
+              >
                 Close
               </Button>
             </div>

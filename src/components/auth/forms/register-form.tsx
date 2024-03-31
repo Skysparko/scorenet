@@ -10,7 +10,6 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { object, ref, string } from "yup";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 const initialValues = {
   city: "",
   email: "",
