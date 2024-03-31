@@ -1,11 +1,10 @@
 import axios from "axios";
-import { store } from "@/store";
-// const user = store.getState().auth.user;
-export const BASEURL = process.env.APP_URL;
+
+export const BASEURL = process.env.APP_URL ?? "http://localhost:8000";
 const appAxios = axios.create({
-  baseURL: BASEURL ?? "http://13.127.169.169:8000/api/v1/",
+  baseURL: BASEURL+"/api/v1/" ,
   // headers:{
-  //   Authorization:  `Bearer ${user.token}`
+  //   Authorization:  `Bearer ${state?.auth?.user?.token}`
   // }
 });
 // appAxios.interceptors.request.use((conf) => {
@@ -37,7 +36,8 @@ const appAxios = axios.create({
 //   }
 // );
 
-export const GetPhoto = (photo: string) => {
-  return `${BASEURL}/${photo}`;
+export const getPhoto = (path:string,photo: string) => {
+  console.log(`${BASEURL}/${path}/${photo}`)
+  return `${BASEURL}/${path}/${photo}`;
 };
 export { appAxios };

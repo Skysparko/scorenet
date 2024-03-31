@@ -3,6 +3,7 @@ import {
   IOtpVerifyPayload,
   IRegisterUserPayload,
   IUpdatePasswordPayload,
+  IUpdateUserPayload,
 } from "@/types/auth.type";
 import * as BaseApi from "./base-api";
 import { IResponse } from "@/types/common.type";
@@ -20,9 +21,11 @@ class AuthApiService {
     payload: IRegisterUserPayload
   ): Promise<IResponse<IUser>> {
     let fd = new FormData();
+
     for (let key in payload as IRegisterUserPayload) {
       fd.append(key, (payload as any)[key]);
     }
+    console.log("fd", fd);
     return BaseApi._post(this.url("register"), fd);
   }
 
@@ -36,25 +39,36 @@ class AuthApiService {
   }
 
   /**
-   * Login user
+   * otp-verify
    * @param IOtpVerifyPayload
 //    * @returns Token
    */
   public async otpVerify(
     payload: IOtpVerifyPayload
   ): Promise<IResponse<IUser>> {
-    return BaseApi._post(this.url("otp_verify"), payload);
+    return BaseApi._post(this.url("otp-verify"), payload);
   }
 
   /**
-   * Login user
-   * @param IOtpVerifyPayload
+   * update password
+   * @param IUpdatePasswordPayload
 //    * @returns Token
    */
   public async updatePassword(
     payload: IUpdatePasswordPayload
   ): Promise<IResponse<IUser>> {
     return BaseApi._post(this.url("update-password"), payload);
+  }
+
+  /**
+   * Update user
+   * @param IUpdateUserPayload
+//    * @returns Token
+   */
+  public async updateUser(
+    payload: IUpdateUserPayload
+  ): Promise<IResponse<IUser>> {
+    return BaseApi._put(this.url("update"), payload);
   }
 }
 const AuthApi = new AuthApiService();

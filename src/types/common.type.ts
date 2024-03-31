@@ -1,3 +1,4 @@
+import {SVGProps} from "react";
 export interface IResponse<T> {
   success: boolean;
   msg: string;
@@ -5,6 +6,11 @@ export interface IResponse<T> {
     list: Array<T>;
     path: string;
     detail: T | null;
-    bearerToken?: string;
+    bearer_token?: string;
   };
+}
+
+
+export type IconSvgProps = SVGProps<SVGSVGElement> & {
+  size?: number;
 }

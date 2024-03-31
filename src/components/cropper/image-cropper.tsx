@@ -8,10 +8,11 @@ type TProps = {
   setCroppedImage: React.Dispatch<React.SetStateAction<string>>;
   showImageError: boolean;
   setShowImageError: React.Dispatch<React.SetStateAction<boolean>>;
+  setFile: React.Dispatch<React.SetStateAction<File | null>>
 };
 
 const ImageCropper = (props: TProps) => {
-  const { croppedImage, setCroppedImage, showImageError,setShowImageError } = props;
+  const { croppedImage, setCroppedImage, showImageError,setShowImageError,setFile } = props;
   const [image, setImage] = useState<HTMLImageElement | null>(null);
 
   const [showCropperModal, setShowCropperModal] = useState(false);
@@ -20,6 +21,8 @@ const ImageCropper = (props: TProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
+      console.log("file",file);
+      setFile(file)
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
@@ -55,7 +58,7 @@ const ImageCropper = (props: TProps) => {
           htmlFor="image"
           className={`${
             showImageError ? "border-red-600 bg-red-100" : "border-gray-300"
-          } border  rounded-xl shadow cursor-pointer`}
+          } border  rounded-xl shadow cursor-pointer w-[100px] h-[100px] overflow-hidden`}
         >
           {croppedImage ? (
             <NextImage

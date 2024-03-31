@@ -1,7 +1,7 @@
 "use client";
 import ImageCropper from "@/components/cropper/image-cropper";
 import { useAppDispatch } from "@/store/hooks";
-import { register, loading as LD } from '@/store/slice/auth-slice';
+import { register, loading as LD } from "@/store/slice/auth-slice";
 import { IRegisterUserPayload } from "@/types/auth.type";
 import { Button, Input } from "@nextui-org/react";
 import { useFormik } from "formik";
@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { object, ref, string } from "yup";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const initialValues = {
   city: "",
   email: "",
@@ -30,8 +32,9 @@ const validationSchema = object().shape({
 const RegisterForm = () => {
   const router = useRouter();
   const [croppedImage, setCroppedImage] = useState<string>("");
+  const [file,setFile] = useState<File|null>(null)
   const [showImageError, setShowImageError] = useState(false);
-  const loading = useSelector(LD)
+  const loading = useSelector(LD);
   const formik = useFormik({
     initialValues: { ...initialValues, confirmPassword: "" },
     validationSchema,
@@ -43,11 +46,11 @@ const RegisterForm = () => {
       if (croppedImage) {
         const payload: IRegisterUserPayload = {
           ...formik.values,
-          image: croppedImage,
+          image: file,
         };
         const res = await dispatch(register(payload)).unwrap();
         if (res.success) {
-          if (res.data.bearerToken) {
+          if (res.data.bearer_token) {
             router.push("/");
           } else {
             router.push("/verify-otp");
@@ -60,11 +63,13 @@ const RegisterForm = () => {
   }
   return (
     <>
+    
       <ImageCropper
         croppedImage={croppedImage}
         setCroppedImage={setCroppedImage}
         showImageError={showImageError}
         setShowImageError={setShowImageError}
+        setFile={setFile}
       />
       <div>
         <form

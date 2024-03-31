@@ -30,7 +30,7 @@ const OtpForm = (props: TProps) => {
         };
         const res = await dispatch(otpVerify(payload)).unwrap();
         if (res.success) {
-          if (res.data.bearerToken) {
+          if (res.data.bearer_token) {
             router.push("/");
           } else {
             router.push("/verify-otp");

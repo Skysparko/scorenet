@@ -10,6 +10,7 @@ import {
   ILoginUserPayload,
   IOtpVerifyPayload,
   IRegisterUserPayload,
+  IUpdateUserPayload,
 } from "@/types/auth.type";
 
 const persistConfig = {
@@ -26,6 +27,7 @@ type TState = {
 const initialState: TState = {
   user: {
     token: null,
+    path: null,
     detail: null,
   },
   loading: false,
@@ -67,6 +69,18 @@ const otpVerify = createAsyncThunk(
   }
 );
 
+const updateUser = createAsyncThunk(
+  "auth/update-user",
+  async (payload: IUpdateUserPayload, thunkApi) => {
+    try {
+      const user = await AuthApi.updateUser(payload);
+      return thunkApi.fulfillWithValue(user);
+    } catch (error) {
+      throw thunkApi.rejectWithValue(error);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -76,7 +90,7 @@ const authSlice = createSlice({
     });
     builder.addCase(login.fulfilled, (state, action) => {
       state.loading = false;
-      state.user.token = action.payload.data.bearerToken ?? null;
+      state.user.token = action.payload.data.bearer_token ?? null;
       state.user.detail = {
         uid: 0,
         name: "",
@@ -87,6 +101,7 @@ const authSlice = createSlice({
         reg_date: "",
         status: "",
       };
+      state.user.path = action.payload.data.path ?? null;
       if (action.payload.data.detail) {
         console.log("ess hi");
         state.user.detail = action.payload.data.detail;
@@ -100,7 +115,7 @@ const authSlice = createSlice({
     });
     builder.addCase(register.fulfilled, (state, action) => {
       state.loading = false;
-      state.user.token = action.payload.data.bearerToken ?? null;
+      state.user.token = action.payload.data.bearer_token ?? null;
       state.user.detail = {
         uid: 0,
         name: "",
@@ -111,6 +126,7 @@ const authSlice = createSlice({
         reg_date: "",
         status: "",
       };
+      state.user.path = action.payload.data.path ?? null;
       if (action.payload.data.detail) {
         state.user.detail = action.payload.data.detail;
       }
@@ -123,11 +139,22 @@ const authSlice = createSlice({
     });
     builder.addCase(otpVerify.fulfilled, (state, action) => {
       state.loading = false;
-      state.user.token = action.payload.data.bearerToken ?? null;
-
+      state.user.token = action.payload.data.bearer_token ?? null;
+      state.user.path = action.payload.data.path ?? null;
       state.user.detail = action.payload.data.detail;
     });
     builder.addCase(otpVerify.rejected, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(updateUser.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(updateUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user.detail = action.payload.data.detail;
+     
+    });
+    builder.addCase(updateUser.rejected, (state, action) => {
       state.loading = false;
     });
   },
@@ -138,8 +165,9 @@ const authSlice = createSlice({
   },
 });
 
-export { login, register, otpVerify };
+export { login, register, otpVerify,updateUser };
 export const tokens = (state: RootState) => state.auth.user.token;
+export const imagePath = (state: RootState) => state.auth.user.path;
 export const user = (state: RootState) => state.auth.user.detail;
 export const loading = (state: RootState) => state.auth.loading;
 export const { logOut } = authSlice.actions;

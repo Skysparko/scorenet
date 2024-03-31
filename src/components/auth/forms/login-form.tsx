@@ -33,7 +33,7 @@ const LoginForm = () => {
     try {
       const res = await dispatch(login(formik.values)).unwrap();
       if (res.success) {
-        if (res.data.bearerToken) {
+        if (res.data.bearer_token) {
           router.push("/");
         } else {
           router.push("/verify-otp");

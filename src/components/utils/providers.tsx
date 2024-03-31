@@ -4,6 +4,8 @@ import { Provider } from "react-redux";
 import { useRef } from "react";
 import { PersistGate } from "redux-persist/integration/react";
 import { NextUIProvider } from "@nextui-org/react";
+import CustomNavbar from "../navbar";
+import { ToastContainer } from "react-toastify";
 
 export default function Providers({
   children,
@@ -14,6 +16,7 @@ export default function Providers({
     <Provider store={store}>
       <PersistGate persistor={persistor}>
       <NextUIProvider>
+      <ToastContainer />
         {children}
       </NextUIProvider>
       </PersistGate>
